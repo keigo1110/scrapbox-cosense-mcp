@@ -113,7 +113,7 @@ async function getPage(
     }
 
     const page = await response.json();
-    
+
     // レスポンスの型チェック
     if (!page || typeof page !== 'object') {
       console.error('Invalid page response format: not an object');
@@ -273,7 +273,7 @@ async function listPages(
 ): Promise<ListPagesResponse & { debug?: DebugInfo }> {
   try {
     const { limit = 1000, skip = 0, sort, excludePinned } = options;
-    
+
     // クエリパラメータの構築
     const sortValue = options.sort || 'created';
     const params = new URLSearchParams({
@@ -283,7 +283,7 @@ async function listPages(
     });
 
     const url = `https://${API_DOMAIN}/api/pages/${projectName}?${params}`;
-    
+
     // デバッグ情報を含めるための変数
     const debugInfo: DebugInfo = {
       request_url: url,
@@ -295,7 +295,7 @@ async function listPages(
           headers: { Cookie: `connect.sid=${sid}` },
         })
       : await fetch(url);
-    
+
     if (!response.ok) {
       return {
         limit: 0,
@@ -368,13 +368,18 @@ function createPageUrl(projectName: string, title: string, body?: string): strin
   return body ? `${baseUrl}?body=${encodeScrapboxBody(body)}` : baseUrl;
 }
 
+function updatePageUrl(projectName: string, title: string, content: string): string {
+  const baseUrl = `https://${API_DOMAIN}/${projectName}/${encodeURIComponent(title)}`;
+  return `${baseUrl}?body=${encodeScrapboxBody(content)}`;
+}
+
 /**
  * プロジェクト内のページを全文検索します
  * @param projectName プロジェクト名
  * @param query 検索クエリ
  * @param sid セッションID（オプション）
  * @returns 検索結果
- * 
+ *
  * 使用例:
  * - 基本的な検索: searchPages("projectname", "検索語句")
  * - 複数語句での検索: searchPages("projectname", "word1 word2")
@@ -388,7 +393,7 @@ async function searchPages(
 ): Promise<SearchQueryResponse | null> {
   const encodedQuery = encodeURIComponent(query);
   const url = `https://${API_DOMAIN}/api/pages/${projectName}/search/query?q=${encodedQuery}`;
-  
+
   const debugInfo = {
     request_url: url,
     searchQuery: query,
@@ -475,4 +480,4 @@ async function listPagesWithSort(
 export type { ListPagesResponse, ScrapboxPage };
 
 // 関数のエクスポート
-export { getPage, listPages, listPagesWithSort, toReadablePage, createPageUrl, searchPages };
+export { getPage, listPages, listPagesWithSort, toReadablePage, createPageUrl, updatePageUrl, searchPages };

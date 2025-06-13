@@ -28,8 +28,8 @@ const VALID_SORT_METHODS = ['updated', 'created', 'accessed', 'linked', 'views',
 const cosenseSid: string | undefined = process.env.COSENSE_SID;
 const projectName: string | undefined = process.env.COSENSE_PROJECT_NAME;
 const initialPageLimit: number = (() => {
-  const limit = process.env.COSENSE_PAGE_LIMIT ? 
-    parseInt(process.env.COSENSE_PAGE_LIMIT, 10) : 
+  const limit = process.env.COSENSE_PAGE_LIMIT ?
+    parseInt(process.env.COSENSE_PAGE_LIMIT, 10) :
     DEFAULT_PAGE_LIMIT;
 
   if (isNaN(limit) || limit < MIN_PAGE_LIMIT || limit > MAX_PAGE_LIMIT) {
@@ -59,7 +59,7 @@ const resources = await (async () => {
   try {
     // 常に100件取得
     const result = await listPages(
-      projectName, 
+      projectName,
       cosenseSid,
       {
         limit: FETCH_PAGE_LIMIT,  // 固定で100件
@@ -108,7 +108,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const url = new URL(request.params.uri);
   const title = decodeURIComponent(url.pathname.replace(/^\//, ""));
-  
+
   const getPageResult = await getPage(projectName, title, cosenseSid);
   if (!getPageResult) {
     throw new Error(`Page ${title} not found`);
@@ -121,8 +121,8 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     `Created user: ${readablePage.lastUpdateUser?.displayName || readablePage.user.displayName}`,
     `Last editor: ${readablePage.user.displayName}`,
     `Other editors: ${readablePage.collaborators
-      .filter(collab => 
-        collab.id !== readablePage.user.id && 
+      .filter(collab =>
+        collab.id !== readablePage.user.id &&
         collab.id !== readablePage.lastUpdateUser?.id
       )
       .map(user => user.displayName)
@@ -130,8 +130,8 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     '',
     readablePage.lines.map(line => line.text).join('\n'),
     '',
-    `Links:\n${getPageResult.links.length > 0 
-      ? getPageResult.links.map((link: string) => `- ${link}`).join('\n') 
+    `Links:\n${getPageResult.links.length > 0
+      ? getPageResult.links.map((link: string) => `- ${link}`).join('\n')
       : '(None)'}`
   ].join('\n');
 
@@ -153,7 +153,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         name: "create_page",
         description: `
         Create a new page in ${projectName} project on ${SERVICE_LABEL}
-        
+
         Creates a new page with the specified title and optional body text.
         The page will be opened in your default browser.
         `,
@@ -194,7 +194,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         name: "list_pages",
         description: `
         List pages from ${projectName} project on ${SERVICE_LABEL} with flexible sorting options.
-        
+
         Available sorting methods:
         - updated: Sort by last update time
         - created: Sort by creation time
@@ -234,7 +234,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         name: "search_pages",
         description: `
         Search pages in ${projectName} project on ${SERVICE_LABEL}
-        
+
         Supports various search features:
         - Basic search: "keyword"
         - Multiple keywords: "word1 word2" (AND search)
@@ -252,6 +252,28 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["query"],
         },
       },
+      {
+        name: "update_page",
+        description: `
+        Update a page in ${projectName} project on ${SERVICE_LABEL}
+
+        Updates an existing page with new content. The page will be opened in your default browser with the new content pre-filled for editing.
+        `,
+        inputSchema: {
+          type: "object",
+          properties: {
+            title: {
+              type: "string",
+              description: "Title of the page to update",
+            },
+            content: {
+              type: "string",
+              description: "New content in markdown format that will be converted to Scrapbox format. Supports standard markdown syntax including links, code blocks, lists, and emphasis.",
+            },
+          },
+          required: ["title", "content"],
+        },
+      },
     ],
   };
 });
@@ -260,7 +282,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
   if (request.params.name === "list_pages") {
     const args = request.params.arguments || {};
-    
+
     const result = await listPages(projectName, cosenseSid, {
       sort: String(args.sort || ''),
       limit: Number(args.limit || 1000),
@@ -275,7 +297,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
       }]
     };
   }
-  
+
   // 他のツールハンドラーが未実装の場合のデフォルトレスポンス
   return {
     content: [{

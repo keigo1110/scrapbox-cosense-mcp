@@ -4,6 +4,7 @@ import { handleListPages } from './handlers/list-pages.js';
 import { handleGetPage } from './handlers/get-page.js';
 import { handleSearchPages } from './handlers/search-pages.js';
 import { handleCreatePage } from './handlers/create-page.js';
+import { handleUpdatePage } from './handlers/update-page.js';
 
 export function setupRoutes(
   server: Server,
@@ -48,6 +49,16 @@ export function setupRoutes(
           {
             title: String(request.params.arguments?.title),
             body: request.params.arguments?.body as string | undefined
+          }
+        );
+
+      case "update_page":
+        return handleUpdatePage(
+          projectName,
+          cosenseSid,
+          {
+            title: String(request.params.arguments?.title),
+            content: String(request.params.arguments?.content)
           }
         );
 
