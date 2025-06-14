@@ -31,6 +31,22 @@ MCP server for [cosense/scrapbox](https://cosen.se).
   - Update existing page content
     - Input: Page title and new content in markdown format
     - Output: URL that can be opened in a browser with pre-filled content for editing
+- `get_backlinks`
+  - Get pages that link to a specific page
+    - Input: Page title
+    - Output: List of pages containing links to the specified page
+- `search_by_tags`
+  - Search pages by tags ([tag] or #tag format)
+    - Input: Array of tag names
+    - Output: List of pages containing all specified tags (AND search)
+- `search_with_date_filter`
+  - Search pages with date filtering
+    - Input: Date range (from/to) and search type (created/updated)
+    - Output: List of pages created or updated within the date range
+- `search_with_regex`
+  - Search pages using regular expressions
+    - Input: Regex pattern and optional flags
+    - Output: List of pages with matching content in title or body
 
 ### Development
 
@@ -151,6 +167,22 @@ The Inspector provides a URL to access debugging tools in the browser.
   - 既存ページのコンテンツを更新
     - 入力: ページタイトルとマークダウン形式の新しいコンテンツ
     - 出力: 編集用にコンテンツが事前入力されたブラウザで開くことができる URL
+- `get_backlinks`
+  - 特定のページを参照している他のページ一覧を取得
+    - 入力: ページタイトル
+    - 出力: 指定されたページへのリンクを含むページのリスト
+- `search_by_tags`
+  - タグによるページ検索（[tag]や#tag形式）
+    - 入力: タグ名の配列
+    - 出力: 指定されたすべてのタグを含むページのリスト（AND検索）
+- `search_with_date_filter`
+  - 日付フィルタリングによるページ検索
+    - 入力: 日付範囲（from/to）と検索種別（created/updated）
+    - 出力: 指定された日付範囲内で作成または更新されたページのリスト
+- `search_with_regex`
+  - 正規表現によるページ検索
+    - 入力: 正規表現パターンとオプションのフラグ
+    - 出力: タイトルまたは本文に一致するコンテンツを含むページのリスト
 
 ## 開発方法
 

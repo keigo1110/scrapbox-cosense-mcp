@@ -274,36 +274,97 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["title", "content"],
         },
       },
+      {
+        name: "get_backlinks",
+        description: `
+        Get backlinks (pages that link to a specific page) in ${projectName} project on ${SERVICE_LABEL}
+
+        Returns a list of pages that contain links to the specified page.
+        `,
+        inputSchema: {
+          type: "object",
+          properties: {
+            title: {
+              type: "string",
+              description: "Title of the page to get backlinks for",
+            },
+          },
+          required: ["title"],
+        },
+      },
+      {
+        name: "search_by_tags",
+        description: `
+        Search pages by tags in ${projectName} project on ${SERVICE_LABEL}
+
+        Searches for pages containing specific tags. Tags can be in [tag] or #tag format.
+        Multiple tags are searched with AND logic.
+        `,
+        inputSchema: {
+          type: "object",
+          properties: {
+            tags: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+              description: "Array of tag names to search for (without brackets or hash)",
+            },
+          },
+          required: ["tags"],
+        },
+      },
+      {
+        name: "search_with_date_filter",
+        description: `
+        Search pages with date filtering in ${projectName} project on ${SERVICE_LABEL}
+
+        Filter pages by creation or update date ranges.
+        `,
+        inputSchema: {
+          type: "object",
+          properties: {
+            from: {
+              type: "string",
+              description: "Start date in ISO format (YYYY-MM-DD)",
+            },
+            to: {
+              type: "string",
+              description: "End date in ISO format (YYYY-MM-DD)",
+            },
+            searchType: {
+              type: "string",
+              enum: ["created", "updated"],
+              description: "Type of date to filter by (default: updated)",
+            },
+          },
+          required: [],
+        },
+      },
+      {
+        name: "search_with_regex",
+        description: `
+        Search pages using regular expressions in ${projectName} project on ${SERVICE_LABEL}
+
+        Performs regex search on page titles and content. 
+        Note: This searches client-side and may be slower for large projects.
+        `,
+        inputSchema: {
+          type: "object",
+          properties: {
+            pattern: {
+              type: "string",
+              description: "Regular expression pattern to search for",
+            },
+            flags: {
+              type: "string",
+              description: "Regex flags (e.g., 'i' for case-insensitive, 'g' for global)",
+            },
+          },
+          required: ["pattern"],
+        },
+      },
     ],
-  };
-});
-
-// list_pagesツールのハンドラーを修正
-server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
-  if (request.params.name === "list_pages") {
-    const args = request.params.arguments || {};
-
-    const result = await listPages(projectName, cosenseSid, {
-      sort: String(args.sort || ''),
-      limit: Number(args.limit || 1000),
-      skip: Number(args.skip || 0),
-      excludePinned: Boolean(args.excludePinned || false)
-    });
-
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify(result, null, 2)
-      }]
-    };
-  }
-
-  // 他のツールハンドラーが未実装の場合のデフォルトレスポンス
-  return {
-    content: [{
-      type: "text",
-      text: "Tool not implemented"
-    }]
   };
 });
 

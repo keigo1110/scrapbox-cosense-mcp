@@ -187,6 +187,12 @@ function toReadablePage(page: GetPageResponse): {
     photo: string;
   }[];
   links: string[];
+  relatedPages?: {
+    links1hop: {
+      title: string;
+      descriptions: string[];
+    }[];
+  };
 } {
   return {
     title: page.title,
@@ -197,6 +203,7 @@ function toReadablePage(page: GetPageResponse): {
     lastUpdateUser: page.lastUpdateUser,
     collaborators: page.collaborators,
     links: page.links,
+    relatedPages: page.relatedPages,
   };
 }
 
